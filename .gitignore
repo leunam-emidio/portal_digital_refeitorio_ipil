@@ -399,3 +399,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# My change: Ignore .env files, which may contain sensitive information such as API keys or database connection strings.
+
+.env

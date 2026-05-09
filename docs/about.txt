@@ -1,0 +1,9 @@
+O projecto vai usar:
+    # Estrutura MVC
+        * Models - Dados
+        * Views - Tela
+        * Controllers - Lógica
+
+    #
+
+    

@@ -4,6 +4,65 @@ O projecto vai usar:
         * Views - Tela
         * Controllers - Lógica
 
-    #
+    # Estrutura das pastas
 
-    
+    portal-refeitorio/
+    │
+    ├── app/
+    │   │
+    │   ├── controllers/
+    │   │   ├── HomeController.php
+    │   │   ├── MenuController.php
+    │   │   ├── FeedbackController.php
+    │   │   └── AuthController.php
+    │   │
+    │   ├── models/
+    │   │   ├── Database.php
+    │   │   ├── Menu.php
+    │   │   ├── Feedback.php
+    │   │   └── User.php
+    │   │
+    │   └── views/
+    │       │
+    │       ├── layouts/
+    │       │   ├── header.php
+    │       │   ├── footer.php
+    │       │   └── navbar.php
+    │       │
+    │       ├── home/
+    │       │   └── index.php
+    │       │
+    │       ├── menu/
+    │       │   ├── index.php
+    │       │   ├── create.php
+    │       │   └── edit.php
+    │       │
+    │       ├── feedback/
+    │       │   ├── index.php
+    │       │   └── create.php
+    │       │
+    │       └── auth/
+    │           ├── login.php
+    │           └── register.php
+    │
+    ├── public/
+    │   │
+    │   ├── css/
+    │   │   └── style.css
+    │   │
+    │   ├── js/
+    │   │   └── app.js
+    │   │
+    │   ├── images/
+    │   │
+    │   └── index.php
+    │
+    ├── routes/
+    │   └── web.php
+    │
+    ├── config/
+    │   └── database.php
+    │
+    └── database/
+        └── refeitorio.sql
+        

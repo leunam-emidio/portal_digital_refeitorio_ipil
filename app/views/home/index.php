@@ -12,7 +12,7 @@
     <header class="header">
         <div class="container navbar">
             <a href="#home" class="logo">
-                <img src="https://portal.ipil.ao/ipil_icon.png" alt="IPIL Logo">
+               <img src="../../../public/imgs/ipil-icon.png" alt="IPIL icon" class="login-logo">
                 Refeitório IPIL
             </a>
             <nav class="nav-links" aria-label="Menu principal">
@@ -114,9 +114,9 @@
             </div>
             <div>
                 <h3>Contato</h3>
-                <p>Rua do Campus, 123</p>
-                <p>(00) 1234-5678</p>
-                <p>digitalrefeitorio@ipil.edu.br</p>
+                <p>Vila Alice, 745</p>
+                <p>(244) 927-535-206</p>
+                <p>digitalrefeitorio@ipil.ao</p>
             </div>
         </div>
         <div class="container footer-bottom">

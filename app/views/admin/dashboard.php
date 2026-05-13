@@ -14,7 +14,7 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo">
-                    <img src="https://portal.ipil.ao/ipil_icon.png" alt="IPIL Logo">
+                   <img src="../../../public/imgs/ipil-icon.png" alt="IPIL icon" class="login-logo">
                     Portal Admin
                 </div>
                 <div class="sidebar-user">

@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperar palavra-passe | Portal do IPIL</title>
+    <title>Recuperar palavra-passe | Refeitório  IPIL</title>
     <link rel="stylesheet" href="../../../public/css/login-ipil.css">
 </head>
 <body>

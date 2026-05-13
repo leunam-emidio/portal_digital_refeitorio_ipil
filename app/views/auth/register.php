@@ -11,8 +11,8 @@
 <body>
     <main>
         <div class="login-wrapper">
-            <img src="https://portal.ipil.ao/ipil_icon.png" alt="IPIL icon" class="login-logo">
-            <h1 class="login-title">Cadastre-se no Portal do IPIL</h1>
+            <img src="../../../public/imgs/ipil-icon.png" alt="IPIL icon" class="login-logo">
+            <h1 class="login-title">Cadastre-se no Refeitorio  IPIL</h1>
             <p class="login-desc">Preencha os dados abaixo para criar sua conta</p>
             <form class="login-form" method="POST" autocomplete="off">
                 <div>

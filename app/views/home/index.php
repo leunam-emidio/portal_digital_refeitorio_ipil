@@ -1,4 +1,6 @@
 <?php
+
+?>
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -63,4 +65,3 @@
 <script src="script.js"></script>
 </body>
 </html>
-?>

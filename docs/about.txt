@@ -15,7 +15,7 @@ O projecto vai usar:
     │   │   ├── MenuController.php
     │   │   ├── FeedbackController.php
     │   │   └── AuthController.php
-    │   │
+    │   
     │   ├── models/
     │   │   ├── Database.php
     │   │   ├── Menu.php

@@ -1,4 +1,34 @@
-<!DOCTYPE html>
+<?php
+
+    require_once __DIR__ . '/config/conn.php';
+    require_once __DIR__ . '/app/controllers/authcontroller.php';
+
+    global $conn;
+
+    $controller = new AuthController($conn);
+
+    $action = $_GET['action'] ?? '';
+
+    switch ($action) {
+
+        case 'login':
+            $controller->login();
+            break;
+
+        case 'register':
+            $controller->register();
+            break;
+
+        case 'dashboard':
+            $controller->dashboard();
+            break;
+
+        case 'logout':
+            $controller->logout();
+            break;
+
+    }
+?><!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -19,8 +49,8 @@
                 <a href="#contato">Contato</a>
             </nav>
             <div class="nav-actions">
-                <a href="../app/views/auth/login.php" class="btn btn-secondary">Login</a>
-                <a href="../app/views/auth/register.php" class="btn btn-primary">Cadastro</a>
+                <a href="app/views/auth/login.php" class="btn btn-secondary">Login</a>
+                <a href="app/views/auth/register.php" class="btn btn-primary">Cadastro</a>
             </div>
             <button class="burger" aria-label="Abrir menu">
                 <span></span>
@@ -35,8 +65,8 @@
                 <h1>Descubra o almoço do dia com praticidade e sabor.</h1>
                 <p>O Portal Digital do Refeitório IPIL traz a lista de pratos do dia, informações de categorias e a experiência intuitiva para acompanhar seu cardápio escolar.</p>
                 <div class="hero-actions">
-                    <a href="../app/views/auth/login.php" class="btn btn-primary">Entrar agora</a>
-                    <a href="../app/views/auth/register.php" class="btn btn-secondary">Criar conta</a>
+                    <a href="app/views/auth/login.php" class="btn btn-primary">Entrar agora</a>
+                    <a href="app/views/auth/register.php" class="btn btn-secondary">Criar conta</a>
                 </div>
             </div>
             <div class="hero-visual">

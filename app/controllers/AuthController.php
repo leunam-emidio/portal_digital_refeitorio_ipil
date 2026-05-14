@@ -40,10 +40,16 @@ class AuthController {
         $name = $_POST['name'];
         $email = $_POST['email'];
         $password = $_POST['password'];
+        $passwordConfirm = $_POST['passwordConfirm'];
+
+        if ($password !== $passwordConfirm) {
+            echo "As palavras passes não coincidem.";
+            return;
+        }
 
         User::create($this->conn, $name, $email, $password);
 
-        header("Location: app/views/dashboard.php");
+        header("Location: app/views/home/home.php");
     }
 
     public function dashboard() {
@@ -53,10 +59,10 @@ class AuthController {
         }
 
         if ($_SESSION['role'] === 'admin') {
-            header("Location: app/views/admin.php");   
+            header("Location: app/views/admin/admin.php");   
         } else {
             #include __DIR__ . '/../views/dashboard.php';
-            header("Location: views/dashboard.php");
+            header("Location: app/views/home/home.php");
         }
     }
 

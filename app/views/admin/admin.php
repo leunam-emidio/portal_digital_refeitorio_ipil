@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Administrador | Refeitório IPIL</title>
-    <link rel="stylesheet" href="../../../public/css/admin-dashboard.css">
+    <link rel="stylesheet" href="../../../css/admin-dashboard.css">
 </head>
 <body>
     <div class="admin-layout">
@@ -14,7 +14,7 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo">
-                    <img src="../../../public/imgs/ipil-icon.png" alt="IPIL Logo">
+                    <img src="../../../imgs/ipil-icon.png" alt="IPIL Logo">
                     Portal Admin
                 </div>
                 <div class="sidebar-user">
@@ -363,11 +363,11 @@
         <p>&copy; 2026 Portal Digital do Refeitório IPIL - Dashboard Administrativo v1.0</p>
     </footer>
 
-    <script src="../../../public/js/admin-dashboard.js"></script>
+    <script src="../../../js/admin-dashboard.js"></script>
     <script>
         function logout() {
             if (confirm('Tem certeza que deseja sair do painel administrativo?')) {
-                window.location.href = '../auth/login.php';
+                window.location.href = '../../../index.php?action=logout';
             }
         }
     </script>

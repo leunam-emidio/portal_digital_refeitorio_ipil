@@ -1,4 +1,6 @@
 <?php
+
+    
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -6,7 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal do Refeitório | IPIL</title>
-    <link rel="stylesheet" href="../../../public/css/home-logged.css">
+    <link rel="stylesheet" href="../../../css/home-logged.css">
 </head>
 <body>
     <header class="header">
@@ -125,11 +127,11 @@
         </div>
     </footer>
 
-    <script src="../../../public/js/home-logged.js"></script>
+    <script src="../../../js/home-logged.js"></script>
     <script>
         function logout() {
             if (confirm('Tem certeza que deseja sair?')) {
-                window.location.href = '../auth/login.php';
+                window.location.href = '../../../index.php?action=logout';
             }
         }
     </script>

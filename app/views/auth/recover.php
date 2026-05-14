@@ -6,12 +6,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recuperar palavra-passe | Portal do IPIL</title>
-    <link rel="stylesheet" href="../../../public/css/login-ipil.css">
+    <link rel="stylesheet" href="../../../css/login-ipil.css">
 </head>
 <body>
     <main>
         <div class="login-wrapper">
-            <img src="../../../public/imgs/ipil-icon.png" alt="IPIL icon" class="login-logo">
+            <img src="../../../imgs/ipil-icon.png" alt="IPIL icon" class="login-logo">
             <h1 class="login-title">Recuperar palavra-passe</h1>
             <p class="login-desc">Insira o seu utilizador ou email para receber instruções de recuperação</p>
             <form class="login-form" method="POST" autocomplete="off">

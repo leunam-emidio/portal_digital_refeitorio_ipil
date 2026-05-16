@@ -1,5 +1,20 @@
 <?php
+    require_once __DIR__ . '/../../../config/conn.php';
+    require_once __DIR__ . '/../../controllers/AuthController.php';
+    require_once __DIR__ . '/../../controllers/MenuController.php';
+    require_once __DIR__ . '/../../controllers/ConfigController.php';
+    require_once __DIR__ . '/../../controllers/FeedbackController.php';
 
+    global $conn;
+
+    $AuthController = new AuthController($conn);
+    $MenuController = new MenuController($conn);
+    $FeedbacksController = new FeedbackController($conn);
+    $ConfigController = new ConfigController($conn);
+
+    $menus = $MenuController->listMenus();
+    $config = $ConfigController->listConfig();
+    $config = $FeedbacksController->listFeedbacks();
     
 ?>
 <!DOCTYPE html>
@@ -14,7 +29,7 @@
     <header class="header">
         <div class="container navbar">
             <a href="#home" class="logo">
-                <img src="https://portal.ipil.ao/ipil_icon.png" alt="IPIL Logo">
+                <img src="../../../imgs/ipil-icon.png" alt="IPIL Logo">
                 Refeitório IPIL
             </a>
             <nav class="nav-links" aria-label="Menu principal">

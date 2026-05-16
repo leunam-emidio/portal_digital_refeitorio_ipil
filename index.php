@@ -1,30 +1,37 @@
 <?php
 
     require_once __DIR__ . '/config/conn.php';
-    require_once __DIR__ . '/app/controllers/authcontroller.php';
+    require_once __DIR__ . '/app/controllers/AuthController.php';
+    require_once __DIR__ . '/app/controllers/MenuController.php';
+    require_once __DIR__ . '/app/controllers/ConfigController.php';
 
     global $conn;
 
-    $controller = new AuthController($conn);
+    $AuthController = new AuthController($conn);
+    $MenuController = new MenuController($conn);
+    $ConfigController = new ConfigController($conn);
+
+    $menus = $MenuController->listMenus();
+    $config = $ConfigController->listConfig();
 
     $action = $_GET['action'] ?? '';
 
     switch ($action) {
 
         case 'login':
-            $controller->login();
+            $AuthController->login();
             break;
 
         case 'register':
-            $controller->register();
+            $AuthController->register();
             break;
 
         case 'dashboard':
-            $controller->dashboard();
+            $AuthController->dashboard();
             break;
 
         case 'logout':
-            $controller->logout();
+            $AuthController->logout();
             break;
 
     }
@@ -41,7 +48,9 @@
         <div class="container navbar">
             <a href="#home" class="logo">
                 <img src="https://portal.ipil.ao/ipil_icon.png" alt="IPIL Logo" style="width: 60px; height: 60px; margin-right: 8px;">
-                <p>Refeitório IPIL</p>
+                <p>
+                    <?= $config[0]['nome_refeitorio'] ?>
+                </p>
             </a>
             <nav class="nav-links" aria-label="Menu principal">
                 <a href="#menu">Cardápio</a>
@@ -61,9 +70,15 @@
     <main class="container">
         <section class="hero" id="home">
             <div class="hero-copy">
-                <span class="hero-pill">Bem-vindo ao cardápio digital</span>
-                <h1>Descubra o almoço do dia com praticidade e sabor.</h1>
-                <p>O Portal Digital do Refeitório IPIL traz a lista de pratos do dia, informações de categorias e a experiência intuitiva para acompanhar seu cardápio escolar.</p>
+                <span class="hero-pill">
+                    <?= $config[0]['nome_refeitorio'] ?>
+                </span>
+                <h1>
+                    <?= $config[0]['titulo_destacar'] ?>
+                </h1>
+                <p>
+                    <?= $config[0]['descricao_cardapio'] ?>
+                </p>
                 <div class="hero-actions">
                     <a href="app/views/auth/login.php" class="btn btn-primary">Entrar agora</a>
                     <a href="app/views/auth/register.php" class="btn btn-secondary">Criar conta</a>
@@ -84,90 +99,30 @@
             </div>
 
             <div class="menu-grid">
+                <?php foreach($menus as $menu): ?>
                 <article class="menu-card">
                     <img src="https://images.unsplash.com/photo-1562967916-eb82221dfb25?auto=format&fit=crop&w=800&q=80" alt="Arroz com feijão e carne">
                     <div class="menu-card-body">
                         <div class="menu-card-header">
                             <div>
-                                <h3 class="menu-card-title">Arroz com Feijão</h3>
-                                <p>Clássico nutritivo, combinação perfeita para o almoço do refeitório.</p>
+                                <h3 class="menu-card-title">
+                                    <?= $menu['name'] ?>
+                                </h3>
+                                <p>
+                                    <?= $menu['description'] ?>
+                                </p>
                             </div>
-                            <span class="menu-category">Prato Principal</span>
+                            <span class="menu-category">
+                                <?= $menu['category'] ?>
+                            </span>
                         </div>
                         <div class="menu-card-footer">
-                            <span>Segunda-feira</span>
-                            <span>Conforto caseiro</span>
+                            <span><?= $menu['weekdays'] ?></span>
+                            <span><?= $menu['tip'] ?></span>
                         </div>
                     </div>
                 </article>
-
-                <article class="menu-card">
-                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80" alt="Salada fresca colorida">
-                    <div class="menu-card-body">
-                        <div class="menu-card-header">
-                            <div>
-                                <h3 class="menu-card-title">Salada Tropical</h3>
-                                <p>Verduras frescas com toque cítrico para equilibrar a refeição.</p>
-                            </div>
-                            <span class="menu-category">Acompanhamento</span>
-                        </div>
-                        <div class="menu-card-footer">
-                            <span>Terça-feira</span>
-                            <span>Refrescante</span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="menu-card">
-                    <img src="https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=800&q=80" alt="Sobremesa de frutas">
-                    <div class="menu-card-body">
-                        <div class="menu-card-header">
-                            <div>
-                                <h3 class="menu-card-title">Gelatina de Frutas</h3>
-                                <p>Doce leve e colorido para fechar a refeição com suavidade.</p>
-                            </div>
-                            <span class="menu-category">Sobremesa</span>
-                        </div>
-                        <div class="menu-card-footer">
-                            <span>Quarta-feira</span>
-                            <span>Leve</span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="menu-card">
-                    <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80" alt="Suco natural em copo transparente">
-                    <div class="menu-card-body">
-                        <div class="menu-card-header">
-                            <div>
-                                <h3 class="menu-card-title">Suco Natural</h3>
-                                <p>Bebida fresca preparada com frutas da estação.</p>
-                            </div>
-                            <span class="menu-category">Bebida</span>
-                        </div>
-                        <div class="menu-card-footer">
-                            <span>Quinta-feira</span>
-                            <span>Refrescante</span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="menu-card">
-                    <img src="https://images.unsplash.com/photo-1500315331616-db0c55f5a0b2?auto=format&fit=crop&w=800&q=80" alt="Prato de massa ao molho vermelho">
-                    <div class="menu-card-body">
-                        <div class="menu-card-header">
-                            <div>
-                                <h3 class="menu-card-title">Massa ao Molho</h3>
-                                <p>Massa saborosa com molho caseiro e ervas aromáticas.</p>
-                            </div>
-                            <span class="menu-category">Prato Principal</span>
-                        </div>
-                        <div class="menu-card-footer">
-                            <span>Sexta-feira</span>
-                            <span>Caseiro</span>
-                        </div>
-                    </div>
-                </article>
+                <?php endforeach ?>
             </div>
         </section>
 
@@ -182,8 +137,12 @@
     <footer class="footer" id="contato">
         <div class="container footer-grid">
             <div>
-                <h3>Refeitório IPIL</h3>
-                <p>Um ambiente acolhedor e nutritivo para estudantes, com menu pensado para o bem-estar diário.</p>
+                <h3>
+                    <?= $config[0]['nome_refeitorio'] ?>
+                </h3>
+                <p>
+                    <?= $config[0]['descricao_refeitorio'] ?>
+                </p>
             </div>
             <div>
                 <h3>Links úteis</h3>
@@ -195,9 +154,9 @@
             </div>
             <div>
                 <h3>Contato</h3>
-                <p>Rua do Campus, 123</p>
-                <p>(00) 1234-5678</p>
-                <p>digitalrefeitorio@ipil.edu.br</p>
+                <p>IPIL</p>
+                <p>(+244) 924 672 777</p>
+                <p>digitalrefeitorio@ipil.edu</p>
             </div>
         </div>
         <div class="container footer-bottom">

@@ -279,8 +279,8 @@
                                     <input type="text" id="restaurant-name" name="restaurantName" class="form-input" required>
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label" for="opening-hours">Horário de Funcionamento</label>
-                                    <input type="text" id="opening-hours" name="openingHours" class="form-input" placeholder="Ex: 07:00 - 19:00" required>
+                                    <label class="form-label" for="description-place">Descrição do refeitório</label>
+                                    <input type="text" id="description-place" name="description-place" class="form-input" value="" required>
                                 </div>
                             </div>
                         </div>
@@ -289,7 +289,15 @@
                             <h3 class="settings-title">Mensagens e Conteúdo</h3>
                             <div class="form-group full-width">
                                 <label class="form-label" for="welcome-message">Mensagem de Boas-vindas</label>
-                                <textarea id="welcome-message" name="welcomeMessage" class="form-textarea" rows="3" required></textarea>
+                                <input type="text" id="welcome-message" name="welcomeMessage" class="form-input" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label" for="title-initial">Titulo a destacar na pagina inicial</label>
+                                 <input type="text" id="title-initial" name="title-initial" class="form-input" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label" for="welcome-message">Descrição do cardápio</label>
+                                <textarea id="description-menu" name="description-menu" class="form-textarea" rows="3" required></textarea>
                             </div>
                         </div>
 
@@ -337,8 +345,8 @@
                     </div>
 
                     <div class="form-group full-width">
-                        <label class="form-label" for="dish-image">URL da Imagem</label>
-                        <input type="url" id="dish-image" name="image" class="form-input" placeholder="https://exemplo.com/imagem.jpg">
+                        <label class="form-label" for="dish-image">Adicione Imagem</label>
+                        <input type="file" id="dish-image" name="image" class="form-input" required>
                     </div>
 
                     <div class="form-group">
@@ -347,6 +355,24 @@
                             <option value="active">Ativo</option>
                             <option value="inactive">Inativo</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="dish-weekdays">Dia de Semana do prato</label>
+                        <select id="dish-weekdays" name="weekdays" class="form-select" required>
+                            <option value="">Selecione o dia da semana</option>
+                            <option value="Prato Principal">Domingo</option>
+                            <option value="Acompanhamento">Segunda-feira</option>
+                            <option value="Sobremesa">Terça-feira</option>
+                            <option value="Bebida">Quarta-feira</option>
+                            <option value="Bebida">Quinta-feira</option>
+                            <option value="Bebida">Sexta-feira</option>
+                            <option value="Bebida">Sábado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="dish-tip">Dica</label>
+                        <input type="text" id="dish-tip" name="tip" class="form-input" required>
                     </div>
                 </div>
 

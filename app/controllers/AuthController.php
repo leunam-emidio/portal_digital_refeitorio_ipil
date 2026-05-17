@@ -28,6 +28,7 @@ class AuthController {
         if ($user && password_verify($password, $user['password'])) {
 
             $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_name'] = $user['name'];
             $_SESSION['role'] = $user['role'];
 
             header("Location: index.php?action=dashboard");
@@ -47,7 +48,11 @@ class AuthController {
             return;
         }
 
-        User::create($this->conn, $name, $email, $password);
+        $userId = User::create($this->conn, $name, $email, $password);
+
+        $_SESSION['user_id'] = $userId;
+        $_SESSION['user_name'] = $name;
+        $_SESSION['role'] = 'user';
 
         header("Location: app/views/home/home.php");
     }

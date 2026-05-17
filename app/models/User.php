@@ -28,6 +28,8 @@ class User {
         $stmt->bindValue(3, $hash);
 
         $stmt->execute();
+
+        return $conn->lastInsertId();
     }
 
     public static function getallusers($conn) {

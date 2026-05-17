@@ -4,12 +4,14 @@
     require_once __DIR__ . '/app/controllers/AuthController.php';
     require_once __DIR__ . '/app/controllers/MenuController.php';
     require_once __DIR__ . '/app/controllers/ConfigController.php';
+    require_once __DIR__ . '/app/controllers/FeedbackController.php';
 
     global $conn;
 
     $AuthController = new AuthController($conn);
     $MenuController = new MenuController($conn);
     $ConfigController = new ConfigController($conn);
+    $FeedbackController = new FeedbackController($conn);
 
     $menus = $MenuController->listMenus();
     $config = $ConfigController->listConfig();
@@ -32,6 +34,10 @@
 
         case 'logout':
             $AuthController->logout();
+            break;
+
+        case 'feedback_create':
+            $FeedbackController->createFeedback();
             break;
 
     }

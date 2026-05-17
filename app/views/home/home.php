@@ -14,7 +14,7 @@
 
     $menus = $MenuController->listMenus();
     $config = $ConfigController->listConfig();
-    $config = $FeedbacksController->listFeedbacks();
+    $feedbacks = $FeedbacksController->listFeedbacks();
     
 ?>
 <!DOCTYPE html>
@@ -142,6 +142,12 @@
         </div>
     </footer>
 
+    <script>
+        window.portalData = {
+            dishes: <?= json_encode($menus, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>,
+            feedbacks: <?= json_encode($feedbacks, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>
+        };
+    </script>
     <script src="../../../js/home-logged.js"></script>
     <script>
         function logout() {

@@ -96,6 +96,46 @@ const mockData = {
     ]
 };
 
+const appData = normalizePortalData(window.portalData, mockData);
+
+function normalizePortalData(portalData, fallbackData) {
+    if (!portalData || !Array.isArray(portalData.dishes)) {
+        return fallbackData;
+    }
+
+    const dishes = portalData.dishes.map(dish => ({
+        id: Number(dish.id),
+        name: dish.name || "Prato",
+        category: dish.category || "Cardapio",
+        description: dish.description || "",
+        image: dish.url || dish.image || "https://images.unsplash.com/photo-1562967916-eb82221dfb25?auto=format&fit=crop&w=800&q=80",
+        likes: Number(dish.likes || 0),
+        liked: Boolean(Number(dish.liked || 0))
+    }));
+
+    const feedbacks = Array.isArray(portalData.feedbacks) ? portalData.feedbacks.map(feedback => ({
+        id: Number(feedback.id),
+        dishId: Number(feedback.id_menu || feedback.dishId),
+        author: feedback.author || "Usuario",
+        date: feedback.create_at || feedback.date || "",
+        text: feedback.comentary || feedback.text || "",
+        likes: Number(feedback.liked || feedback.likes || 0),
+        liked: false
+    })) : [];
+
+    return { dishes, feedbacks };
+}
+
+function escapeHTML(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    }[char]));
+}
+
 // DOM elements
 let menuGrid, feedbackModal, dishFeedbacksModal, feedbackForm, feedbackTextarea, feedbackSection;
 
@@ -120,16 +160,16 @@ document.addEventListener('DOMContentLoaded', function() {
 function initMenu() {
     if (!menuGrid) return;
 
-    menuGrid.innerHTML = mockData.dishes.map(dish => `
+    menuGrid.innerHTML = appData.dishes.map(dish => `
         <article class="menu-card" data-dish-id="${dish.id}">
-            <img src="${dish.image}" alt="${dish.name}">
+            <img src="${escapeHTML(dish.image)}" alt="${escapeHTML(dish.name)}">
             <div class="menu-card-body">
                 <div class="menu-card-header">
                     <div>
-                        <h3 class="menu-card-title">${dish.name}</h3>
-                        <p>${dish.description}</p>
+                        <h3 class="menu-card-title">${escapeHTML(dish.name)}</h3>
+                        <p>${escapeHTML(dish.description)}</p>
                     </div>
-                    <span class="menu-category">${dish.category}</span>
+                    <span class="menu-category">${escapeHTML(dish.category)}</span>
                 </div>
                 <div class="menu-card-footer">
                     <div class="menu-actions">
@@ -162,7 +202,7 @@ function initMenu() {
 // Handle like button click
 function handleLike(e) {
     const dishId = parseInt(e.currentTarget.dataset.dishId);
-    const dish = mockData.dishes.find(d => d.id === dishId);
+    const dish = appData.dishes.find(d => d.id === dishId);
 
     if (!dish) return;
 
@@ -180,15 +220,30 @@ function handleLike(e) {
     saveData();
 }
 
+// Handle feedback button click
+function handleFeedbackClick(e) {
+    const dishId = parseInt(e.currentTarget.dataset.dishId);
+    const dish = appData.dishes.find(d => d.id === dishId);
+
+    if (!dish || !feedbackModal || !feedbackForm) return;
+
+    const modalTitle = document.getElementById('modal-title');
+    modalTitle.textContent = `Deixar feedback sobre ${dish.name}`;
+    feedbackForm.dataset.dishId = dishId;
+    feedbackTextarea.value = '';
+    feedbackModal.classList.add('show');
+    feedbackTextarea.focus();
+}
+
 // Handle view feedbacks button click
 function handleViewFeedbacks(e) {
     const dishId = parseInt(e.currentTarget.dataset.dishId);
-    const dish = mockData.dishes.find(d => d.id === dishId);
+    const dish = appData.dishes.find(d => d.id === dishId);
 
     if (!dish) return;
 
     // Get feedbacks for this dish
-    const dishFeedbacks = mockData.feedbacks.filter(f => f.dishId === dishId);
+    const dishFeedbacks = appData.feedbacks.filter(f => f.dishId === dishId);
 
     // Update modal title
     const modalTitle = document.getElementById('dish-feedbacks-modal-title');
@@ -208,10 +263,10 @@ function handleViewFeedbacks(e) {
         feedbacksContainer.innerHTML = dishFeedbacks.map(feedback => `
             <div class="dish-feedback-item">
                 <div class="dish-feedback-header">
-                    <span class="dish-feedback-author">${feedback.author}</span>
+                    <span class="dish-feedback-author">${escapeHTML(feedback.author)}</span>
                     <span class="dish-feedback-date">${formatDate(feedback.date)}</span>
                 </div>
-                <p class="dish-feedback-text">${feedback.text}</p>
+                <p class="dish-feedback-text">${escapeHTML(feedback.text)}</p>
                 <div class="dish-feedback-actions">
                     <button class="btn-like-comment ${feedback.liked ? 'liked' : ''}" data-feedback-id="${feedback.id}">
                         <span>👍</span>
@@ -267,13 +322,51 @@ function initFeedbackModal() {
     });
 
     // Submit feedback
-    feedbackForm.addEventListener('submit', (e) => {
+    feedbackForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const dishId = parseInt(feedbackForm.dataset.dishId);
         const text = feedbackTextarea.value.trim();
 
         if (!text) return;
+
+        try {
+            const formData = new FormData();
+            formData.append('id_menu', dishId);
+            formData.append('comentary', text);
+
+            const response = await fetch('../../../index.php?action=feedback_create', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                alert(result.message || 'Nao foi possivel enviar o feedback.');
+                return;
+            }
+
+            const feedback = result.feedback;
+            appData.feedbacks.unshift({
+                id: Number(feedback.id),
+                dishId: Number(feedback.id_menu),
+                author: feedback.author || "Voce",
+                date: feedback.create_at,
+                text: feedback.comentary,
+                likes: Number(feedback.liked || 0),
+                liked: false
+            });
+
+            renderFeedbacks();
+            feedbackModal.classList.remove('show');
+            feedbackTextarea.value = '';
+            alert('Feedback enviado com sucesso!');
+        } catch (error) {
+            alert('Erro ao enviar feedback. Tente novamente.');
+        }
+
+        return;
 
         // Create new feedback
         const newFeedback = {
@@ -286,7 +379,7 @@ function initFeedbackModal() {
             liked: false
         };
 
-        mockData.feedbacks.push(newFeedback);
+        appData.feedbacks.push(newFeedback);
 
         // Update UI
         renderFeedbacks();
@@ -305,18 +398,18 @@ function initFeedbackModal() {
 function renderFeedbacks() {
     if (!feedbackSection) return;
 
-    const feedbacksHTML = mockData.feedbacks.map(feedback => {
-        const dish = mockData.dishes.find(d => d.id === feedback.dishId);
+    const feedbacksHTML = appData.feedbacks.map(feedback => {
+        const dish = appData.dishes.find(d => d.id === feedback.dishId);
         return `
             <div class="feedback-card">
                 <div class="feedback-header">
                     <div>
-                        <span class="feedback-author">${feedback.author}</span>
+                        <span class="feedback-author">${escapeHTML(feedback.author)}</span>
                         <span class="feedback-date">${formatDate(feedback.date)}</span>
                     </div>
-                    <span class="feedback-dish">${dish ? dish.name : 'Prato'}</span>
+                    <span class="feedback-dish">${escapeHTML(dish ? dish.name : 'Prato')}</span>
                 </div>
-                <p class="feedback-text">${feedback.text}</p>
+                <p class="feedback-text">${escapeHTML(feedback.text)}</p>
                 <div class="feedback-actions">
                     <button class="btn-like-comment ${feedback.liked ? 'liked' : ''}" data-feedback-id="${feedback.id}">
                         <span>👍</span>
@@ -344,7 +437,7 @@ function renderFeedbacks() {
 // Handle feedback like
 function handleFeedbackLike(e) {
     const feedbackId = parseInt(e.currentTarget.dataset.feedbackId);
-    const feedback = mockData.feedbacks.find(f => f.id === feedbackId);
+    const feedback = appData.feedbacks.find(f => f.id === feedbackId);
 
     if (!feedback) return;
 
@@ -400,15 +493,17 @@ function formatDate(dateString) {
 
 function saveData() {
     // Save to localStorage for persistence simulation
-    localStorage.setItem('portal-refeitorio-data', JSON.stringify(mockData));
+    localStorage.setItem('portal-refeitorio-data', JSON.stringify(appData));
 }
 
 function loadData() {
+    if (window.portalData) return;
+
     // Load from localStorage
     const saved = localStorage.getItem('portal-refeitorio-data');
     if (saved) {
         const parsed = JSON.parse(saved);
-        Object.assign(mockData, parsed);
+        Object.assign(appData, parsed);
     }
 }
 

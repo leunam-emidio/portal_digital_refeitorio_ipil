@@ -24,6 +24,24 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `configuration`
+--
+
+CREATE TABLE `configuration` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome_refeitorio` varchar(100) NOT NULL DEFAULT 'Refeitório IPIL',
+  `descricao_refeitorio` varchar(255) NOT NULL DEFAULT '',
+  `boas_vinda` varchar(120) NOT NULL DEFAULT 'Bem-vindo',
+  `titulo_index` varchar(150) NOT NULL DEFAULT 'Portal Digital do Refeitório IPIL',
+  `descricao_index` text DEFAULT NULL,
+  `titulo_home` varchar(150) NOT NULL DEFAULT 'Explore o cardápio e compartilhe suas experiências.',
+  `descricao_home` text DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `feedbacks`
 --
 
@@ -48,7 +66,9 @@ CREATE TABLE `menu` (
   `category` enum('Prato Principal','Acompanhamento','Sobremesa','Bebida') NOT NULL,
   `description` varchar(255) NOT NULL,
   `status` enum('active','inactive') NOT NULL DEFAULT 'active',
-  `url` varchar(255) NOT NULL
+  `url` varchar(255) NOT NULL,
+  `weekdays` varchar(30) DEFAULT NULL,
+  `tip` varchar(120) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

@@ -24,13 +24,19 @@
        
         public static function getAllFeedbacks($conn) {
             $stmt = $conn->prepare(
-                "SELECT feedbacks.*, users.name AS author
+                "SELECT feedbacks.*, users.name AS author, menu.name AS menu_name
                  FROM feedbacks
                  LEFT JOIN users ON users.id = feedbacks.id_user
+                 LEFT JOIN menu ON menu.id = feedbacks.id_menu
                  ORDER BY feedbacks.create_at DESC"
             );
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        public static function delete($conn, $id) {
+            $stmt = $conn->prepare("DELETE FROM feedbacks WHERE id = ?");
+            return $stmt->execute([$id]);
         }
 
     }

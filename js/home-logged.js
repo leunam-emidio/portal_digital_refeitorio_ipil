@@ -6,7 +6,7 @@ const mockData = {
             name: "Arroz com Feijão",
             category: "Prato Principal",
             description: "Clássico nutritivo, combinação perfeita para o almoço do refeitório.",
-            image: "https://images.unsplash.com/photo-1562967916-eb82221dfb25?auto=format&fit=crop&w=800&q=80",
+            image: "../../../imgs/ipil-icon.png",
             likes: 24,
             liked: false
         },
@@ -15,7 +15,7 @@ const mockData = {
             name: "Salada Tropical",
             category: "Acompanhamento",
             description: "Verduras frescas com toque cítrico para equilibrar a refeição.",
-            image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80",
+            image: "../../../imgs/ipil-icon.png",
             likes: 18,
             liked: false
         },
@@ -24,7 +24,7 @@ const mockData = {
             name: "Gelatina de Frutas",
             category: "Sobremesa",
             description: "Doce leve e colorido para fechar a refeição com suavidade.",
-            image: "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=800&q=80",
+            image: "../../../imgs/ipil-icon.png",
             likes: 12,
             liked: false
         },
@@ -33,7 +33,7 @@ const mockData = {
             name: "Suco Natural",
             category: "Bebida",
             description: "Bebida fresca preparada com frutas da estação.",
-            image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80",
+            image: "../../../imgs/ipil-icon.png",
             likes: 31,
             liked: false
         },
@@ -42,7 +42,7 @@ const mockData = {
             name: "Massa ao Molho",
             category: "Prato Principal",
             description: "Massa saborosa com molho caseiro e ervas aromáticas.",
-            image: "https://images.unsplash.com/photo-1500315331616-db0c55f5a0b2?auto=format&fit=crop&w=800&q=80",
+            image: "../../../imgs/ipil-icon.png",
             likes: 27,
             liked: false
         },
@@ -51,7 +51,7 @@ const mockData = {
             name: "Bife de Carne",
             category: "Prato Principal",
             description: "Corte suculento preparado na perfeição.",
-            image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80",
+            image: "../../../imgs/ipil-icon.png",
             likes: 35,
             liked: false
         }
@@ -108,7 +108,7 @@ function normalizePortalData(portalData, fallbackData) {
         name: dish.name || "Prato",
         category: dish.category || "Cardapio",
         description: dish.description || "",
-        image: dish.url || dish.image || "https://images.unsplash.com/photo-1562967916-eb82221dfb25?auto=format&fit=crop&w=800&q=80",
+        image: resolveLocalImage(dish.url || dish.image),
         likes: Number(dish.likes || 0),
         liked: Boolean(Number(dish.liked || 0))
     }));
@@ -124,6 +124,18 @@ function normalizePortalData(portalData, fallbackData) {
     })) : [];
 
     return { dishes, feedbacks };
+}
+
+function resolveLocalImage(path) {
+    if (!path || path.startsWith("http://") || path.startsWith("https://")) {
+        return "../../../imgs/ipil-icon.png";
+    }
+
+    if (path.startsWith("../")) {
+        return path;
+    }
+
+    return `../../../${path}`;
 }
 
 function escapeHTML(value) {

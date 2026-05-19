@@ -1,7 +1,6 @@
 <?php
-    
     require_once __DIR__ . '/../../config/conn.php';
-    require_once __DIR__ . '/../models/user.php';
+require_once __DIR__ . '/../models/User.php';
 
 
 class AuthController {
@@ -24,6 +23,11 @@ class AuthController {
         $password = $_POST['password'];
     
         $user = User::findByEmail($this->conn, $email);
+
+        if ($user && ($user['status'] ?? 'active') === 'blocked') {
+            echo "Conta bloqueada. Contacte o administrador.";
+            return;
+        }
 
         if ($user && password_verify($password, $user['password'])) {
 
@@ -74,6 +78,46 @@ class AuthController {
     public function logout() {
         session_destroy();
         header("Location: index.php");
+    }
+
+    public function toggleUserStatus() {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        $status = $_POST['status'] ?? '';
+
+        if (!$id || !in_array($status, ['active', 'blocked'], true)) {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => 'Dados de utilizador inválidos.']);
+            return;
+        }
+
+        if ($id === (int) ($_SESSION['user_id'] ?? 0)) {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => 'Não pode bloquear a própria conta.']);
+            return;
+        }
+
+        echo json_encode(['success' => User::updateStatus($this->conn, $id, $status)]);
+    }
+
+    public function deleteUser() {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        if (!$id) {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => 'Utilizador inválido.']);
+            return;
+        }
+
+        if ($id === (int) ($_SESSION['user_id'] ?? 0)) {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => 'Não pode excluir a própria conta.']);
+            return;
+        }
+
+        echo json_encode(['success' => User::delete($this->conn, $id)]);
     }
 }
 ?>

@@ -1,4 +1,27 @@
 <?php
+    require_once __DIR__ . '/../../../config/conn.php';
+    require_once __DIR__ . '/../../controllers/AuthController.php';
+    require_once __DIR__ . '/../../controllers/MenuController.php';
+    require_once __DIR__ . '/../../controllers/FeedbackController.php';
+    require_once __DIR__ . '/../../controllers/ConfigController.php';
+
+    if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
+        header('Location: ../../../index.php');
+        exit;
+    }
+
+    global $conn;
+
+    $AuthController = new AuthController($conn);
+    $MenuController = new MenuController($conn);
+    $FeedbackController = new FeedbackController($conn);
+    $ConfigController = new ConfigController($conn);
+
+    $users = $AuthController->getAllusers();
+    $menus = $MenuController->listMenus();
+    $feedbacks = $FeedbackController->listFeedbacks();
+    $config = $ConfigController->listConfig();
+    $configItem = $config[0] ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -147,6 +170,7 @@
                         <thead>
                             <tr>
                                 <th>Nome</th>
+                                <th>Imagem</th>
                                 <th>Categoria</th>
                                 <th>Descrição</th>
                                 <th>Status</th>
@@ -276,11 +300,11 @@
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label class="form-label" for="restaurant-name">Nome do Refeitório</label>
-                                    <input type="text" id="restaurant-name" name="restaurantName" class="form-input" required>
+                                    <input type="text" id="restaurant-name" name="nome_refeitorio" class="form-input" required>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label" for="description-place">Descrição do refeitório</label>
-                                    <input type="text" id="description-place" name="description-place" class="form-input" value="" required>
+                                    <input type="text" id="description-place" name="descricao_refeitorio" class="form-input" value="" required>
                                 </div>
                             </div>
                         </div>
@@ -289,15 +313,23 @@
                             <h3 class="settings-title">Mensagens e Conteúdo</h3>
                             <div class="form-group full-width">
                                 <label class="form-label" for="welcome-message">Mensagem de Boas-vindas</label>
-                                <input type="text" id="welcome-message" name="welcomeMessage" class="form-input" required>
+                                <input type="text" id="welcome-message" name="boas_vinda" class="form-input" required>
                             </div>
                             <div class="form-group full-width">
                                 <label class="form-label" for="title-initial">Titulo a destacar na pagina inicial</label>
-                                 <input type="text" id="title-initial" name="title-initial" class="form-input" required>
+                                 <input type="text" id="title-initial" name="titulo_index" class="form-input" required>
                             </div>
                             <div class="form-group full-width">
-                                <label class="form-label" for="welcome-message">Descrição do cardápio</label>
-                                <textarea id="description-menu" name="description-menu" class="form-textarea" rows="3" required></textarea>
+                                <label class="form-label" for="description-initial">Descrição na pagina inicial</label>
+                                <textarea id="description-initial" name="descricao_index" class="form-textarea" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label" for="title-home">Titulo a destacar na home</label>
+                                 <input type="text" id="title-home" name="titulo_home" class="form-input" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label" for="description-home">Descrição na home</label>
+                                <textarea id="description-menu" name="descricao_home" class="form-textarea" rows="3" required></textarea>
                             </div>
                         </div>
 
@@ -321,7 +353,8 @@
                 <button class="modal-close">&times;</button>
             </div>
 
-            <form id="dish-form" onsubmit="saveDish(event)">
+            <form id="dish-form" onsubmit="saveDish(event)" enctype="multipart/form-data">
+                <input type="hidden" id="dish-id" name="id">
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label" for="dish-name">Nome do Prato</label>
@@ -346,7 +379,7 @@
 
                     <div class="form-group full-width">
                         <label class="form-label" for="dish-image">Adicione Imagem</label>
-                        <input type="file" id="dish-image" name="image" class="form-input" required>
+                        <input type="file" id="dish-image" name="image" class="form-input" accept="image/png,image/jpeg,image/gif,image/webp">
                     </div>
 
                     <div class="form-group">
@@ -360,13 +393,13 @@
                         <label class="form-label" for="dish-weekdays">Dia de Semana do prato</label>
                         <select id="dish-weekdays" name="weekdays" class="form-select" required>
                             <option value="">Selecione o dia da semana</option>
-                            <option value="Prato Principal">Domingo</option>
-                            <option value="Acompanhamento">Segunda-feira</option>
-                            <option value="Sobremesa">Terça-feira</option>
-                            <option value="Bebida">Quarta-feira</option>
-                            <option value="Bebida">Quinta-feira</option>
-                            <option value="Bebida">Sexta-feira</option>
-                            <option value="Bebida">Sábado</option>
+                            <option value="Domingo">Domingo</option>
+                            <option value="Segunda-feira">Segunda-feira</option>
+                            <option value="Terça-feira">Terça-feira</option>
+                            <option value="Quarta-feira">Quarta-feira</option>
+                            <option value="Quinta-feira">Quinta-feira</option>
+                            <option value="Sexta-feira">Sexta-feira</option>
+                            <option value="Sábado">Sábado</option>
                         </select>
                     </div>
 
@@ -389,6 +422,14 @@
         <p>&copy; 2026 Portal Digital do Refeitório IPIL - Dashboard Administrativo v1.0</p>
     </footer>
 
+    <script>
+        window.adminData = {
+            users: <?= json_encode($users, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>,
+            dishes: <?= json_encode($menus, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>,
+            feedbacks: <?= json_encode($feedbacks, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>,
+            settings: <?= json_encode($configItem, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>
+        };
+    </script>
     <script src="../../../js/admin-dashboard.js"></script>
     <script>
         function logout() {

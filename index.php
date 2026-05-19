@@ -40,7 +40,57 @@
             $FeedbackController->createFeedback();
             break;
 
+        case 'menu_save':
+            requireAdmin();
+            $MenuController->saveMenu();
+            exit;
+
+        case 'menu_delete':
+            requireAdmin();
+            $MenuController->deleteMenu();
+            exit;
+
+        case 'user_status':
+            requireAdmin();
+            $AuthController->toggleUserStatus();
+            exit;
+
+        case 'user_delete':
+            requireAdmin();
+            $AuthController->deleteUser();
+            exit;
+
+        case 'feedback_delete':
+            requireAdmin();
+            $FeedbackController->deleteFeedback();
+            exit;
+
+        case 'config_save':
+            requireAdmin();
+            $ConfigController->saveConfig();
+            exit;
+
     }
+
+    function requireAdmin() {
+        if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Acesso negado.']);
+            exit;
+        }
+    }
+
+    function publicImagePath($path) {
+        if (!$path || str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return 'imgs/ipil-icon.png';
+        }
+
+        return $path;
+    }
+
+    $configItem = $config[0] ?? [];
+    $heroImage = publicImagePath($menus[0]['url'] ?? '');
 ?><!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -53,9 +103,9 @@
     <header class="header">
         <div class="container navbar">
             <a href="#home" class="logo">
-                <img src="https://portal.ipil.ao/ipil_icon.png" alt="IPIL Logo" style="width: 60px; height: 60px; margin-right: 8px;">
+                <img src="imgs/ipil-icon.png" alt="IPIL Logo" style="width: 60px; height: 60px; margin-right: 8px;">
                 <p>
-                    <?= $config[0]['nome_refeitorio'] ?>
+                    <?= htmlspecialchars($configItem['nome_refeitorio'] ?? 'Refeitório IPIL') ?>
                 </p>
             </a>
             <nav class="nav-links" aria-label="Menu principal">
@@ -77,13 +127,13 @@
         <section class="hero" id="home">
             <div class="hero-copy">
                 <span class="hero-pill">
-                    <?= $config[0]['nome_refeitorio'] ?>
+                    <?= htmlspecialchars($configItem['nome_refeitorio'] ?? 'Refeitório IPIL') ?>
                 </span>
                 <h1>
-                    <?= $config[0]['titulo_destacar'] ?>
+                    <?= htmlspecialchars($configItem['titulo_index'] ?? 'Portal Digital do Refeitório IPIL') ?>
                 </h1>
                 <p>
-                    <?= $config[0]['descricao_cardapio'] ?>
+                    <?= htmlspecialchars($configItem['descricao_index'] ?? '') ?>
                 </p>
                 <div class="hero-actions">
                     <a href="app/views/auth/login.php" class="btn btn-primary">Entrar agora</a>
@@ -91,7 +141,7 @@
                 </div>
             </div>
             <div class="hero-visual">
-                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80" alt="Prato saudável do refeitório">
+                <img src="<?= htmlspecialchars($heroImage) ?>" alt="Prato do refeitório">
             </div>
         </section>
 
@@ -107,24 +157,24 @@
             <div class="menu-grid">
                 <?php foreach($menus as $menu): ?>
                 <article class="menu-card">
-                    <img src="https://images.unsplash.com/photo-1562967916-eb82221dfb25?auto=format&fit=crop&w=800&q=80" alt="Arroz com feijão e carne">
+                    <img src="<?= htmlspecialchars(publicImagePath($menu['url'] ?? '')) ?>" alt="<?= htmlspecialchars($menu['name']) ?>">
                     <div class="menu-card-body">
                         <div class="menu-card-header">
                             <div>
                                 <h3 class="menu-card-title">
-                                    <?= $menu['name'] ?>
+                                    <?= htmlspecialchars($menu['name']) ?>
                                 </h3>
                                 <p>
-                                    <?= $menu['description'] ?>
+                                    <?= htmlspecialchars($menu['description']) ?>
                                 </p>
                             </div>
                             <span class="menu-category">
-                                <?= $menu['category'] ?>
+                                <?= htmlspecialchars($menu['category']) ?>
                             </span>
                         </div>
                         <div class="menu-card-footer">
-                            <span><?= $menu['weekdays'] ?></span>
-                            <span><?= $menu['tip'] ?></span>
+                            <span><?= htmlspecialchars($menu['weekdays'] ?? '') ?></span>
+                            <span><?= htmlspecialchars($menu['tip'] ?? '') ?></span>
                         </div>
                     </div>
                 </article>
@@ -144,10 +194,10 @@
         <div class="container footer-grid">
             <div>
                 <h3>
-                    <?= $config[0]['nome_refeitorio'] ?>
+                    <?= htmlspecialchars($configItem['nome_refeitorio'] ?? 'Refeitório IPIL') ?>
                 </h3>
                 <p>
-                    <?= $config[0]['descricao_refeitorio'] ?>
+                    <?= htmlspecialchars($configItem['descricao_refeitorio'] ?? '') ?>
                 </p>
             </div>
             <div>

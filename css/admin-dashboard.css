@@ -361,6 +361,14 @@ a {
     background: #f8fafc;
 }
 
+.table-image {
+    width: 64px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
 .status-badge {
     padding: 4px 12px;
     border-radius: 999px;

@@ -11,7 +11,7 @@
 <body>
     <main>
         <div class="login-wrapper">
-            <img src="https://portal.ipil.ao/ipil_icon.png" alt="IPIL icon" class="login-logo">
+            <img src="../../../imgs/ipil-icon.png" alt="IPIL icon" class="login-logo">
             <h1 class="login-title">Entre no Portal do IPIL</h1>
             <p class="login-desc">Insira os seus dados de utilizador abaixo para fazer login</p>
             <form action="../../../index.php?action=login" method="POST" autocomplete="on">

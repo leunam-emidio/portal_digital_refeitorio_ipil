@@ -1,4 +1,10 @@
 <?php
+    
+    if (!isset($_SESSION['user_name'])) {
+        header('Location: ../auth/login.php');
+        exit;
+    }
+
     require_once __DIR__ . '/../../../config/conn.php';
     require_once __DIR__ . '/../../controllers/AuthController.php';
     require_once __DIR__ . '/../../controllers/MenuController.php';
@@ -15,6 +21,11 @@
     $menus = $MenuController->listMenus();
     $config = $ConfigController->listConfig();
     $feedbacks = $FeedbacksController->listFeedbacks();
+    $configItem = $config[0] ?? [];
+    $heroImage = $menus[0]['url'] ?? 'imgs/ipil-icon.png';
+    if (!$heroImage || str_starts_with($heroImage, 'http://') || str_starts_with($heroImage, 'https://')) {
+        $heroImage = 'imgs/ipil-icon.png';
+    }
     
 ?>
 <!DOCTYPE html>
@@ -30,15 +41,19 @@
         <div class="container navbar">
             <a href="#home" class="logo">
                 <img src="../../../imgs/ipil-icon.png" alt="IPIL Logo">
-                Refeitório IPIL
+                <?= htmlspecialchars($configItem['nome_refeitorio'] ?? 'Refeitório IPIL') ?>
             </a>
             <nav class="nav-links" aria-label="Menu principal">
                 <a href="#menu">Cardápio</a>
                 <a href="#sobre">Sobre</a>
             </nav>
             <div class="user-info">
-                <div class="user-avatar">JS</div>
-                <span>João Silva</span>
+                <div class="user-avatar">
+                    <?= ucwords($_SESSION['user_name'][0]) ?>
+                </div>
+                <span>
+                    <?= ucwords($_SESSION['user_name']) ?>
+                </span>
                 <button class="btn btn-logout" onclick="logout()">Logout</button>
             </div>
             <button class="burger" aria-label="Abrir menu">
@@ -50,15 +65,21 @@
     <main class="container">
         <section class="hero" id="home">
             <div class="hero-copy">
-                <span class="hero-pill">Bem-vindo de volta, João! 👋</span>
-                <h1>Explore o cardápio e compartilhe suas experiências.</h1>
-                <p>Como usuário logado, você pode curtir pratos, deixar feedbacks e ver comentários de outros estudantes sobre o refeitório.</p>
+                <span class="hero-pill">
+                    <?= htmlspecialchars($configItem['boas_vinda'] ?? 'Bem-vindo') ?>
+                    , <?= htmlspecialchars(ucwords($_SESSION['user_name'])) ?>!!!</span>
+                <h1>
+                    <?= htmlspecialchars($configItem['titulo_home'] ?? '') ?>
+                </h1>
+                <p>
+                    <?= htmlspecialchars($configItem['descricao_home'] ?? '') ?>
+                </p>
                 <div class="hero-actions">
                     <a href="#menu" class="btn btn-primary">Ver Cardápio</a>
                 </div>
             </div>
             <div class="hero-visual">
-                <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80" alt="Refeitório acolhedor">
+                <img src="../../../<?= htmlspecialchars($heroImage) ?>" alt="Refeitório acolhedor">
             </div>
         </section>
 
@@ -118,8 +139,12 @@
     <footer class="footer">
         <div class="container footer-grid">
             <div>
-                <h3>Refeitório IPIL</h3>
-                <p>Um ambiente acolhedor e nutritivo para estudantes, com menu pensado para o bem-estar diário.</p>
+                <h3>
+                    <?= htmlspecialchars($configItem['nome_refeitorio'] ?? 'Refeitório IPIL') ?>    
+                </h3>
+                <p>
+                    <?= htmlspecialchars($configItem['descricao_refeitorio'] ?? '') ?>
+                </p>
             </div>
             <div>
                 <h3>Links úteis</h3>
@@ -130,10 +155,10 @@
                 </ul>
             </div>
             <div>
-                <h3>Contato</h3>
-                <p>Rua do Campus, 123</p>
-                <p>(00) 1234-5678</p>
-                <p>digitalrefeitorio@ipil.edu.br</p>
+                <h3>Contatos</h3>
+                <p>IPIL</p>
+                <p>924 672 777</p>
+                <p>digitalrefeitorio@ipil.edu</p>
             </div>
         </div>
         <div class="container footer-bottom">

@@ -36,5 +36,20 @@
             exit;
         }
 
+        public function deleteFeedback() {
+            global $conn;
+
+            header('Content-Type: application/json; charset=utf-8');
+
+            $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+            if (!$id) {
+                http_response_code(422);
+                echo json_encode(['success' => false, 'message' => 'Feedback inválido.']);
+                return;
+            }
+
+            echo json_encode(['success' => Feedbacks::delete($conn, $id)]);
+        }
+
     }
 ?>

@@ -33,7 +33,9 @@ CREATE TABLE `menu` (
   `category` enum('Prato Principal','Acompanhamento','Sobremesa','Bebida') NOT NULL,
   `description` varchar(255) NOT NULL,
   `status` enum('active','inactive') NOT NULL DEFAULT 'active',
-  `url` varchar(255) NOT NULL
+  `url` varchar(255) NOT NULL,
+  `weekdays` varchar(30) DEFAULT NULL,
+  `tip` varchar(120) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

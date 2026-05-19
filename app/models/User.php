@@ -33,7 +33,7 @@ class User {
     }
 
     public static function getallusers($conn) {
-        $stmt = $conn->prepare("SELECT id, name, email, role, status, create_at FROM users ORDER BY create_at DESC");
+        $stmt = $conn->prepare("SELECT id, name, email, role, status, create_at FROM users  WHERE role != 'admin' ORDER BY create_at DESC");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -47,7 +47,7 @@ class User {
         $deleteFeedbacks = $conn->prepare("DELETE FROM feedbacks WHERE id_user = ?");
         $deleteFeedbacks->execute([$id]);
 
-        $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+        $stmt = $conn->prepare("DELETE FROM users WHERE id = ? AND role != 'admin'");
         return $stmt->execute([$id]);
     }
 }

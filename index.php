@@ -90,7 +90,7 @@
     }
 
     $configItem = $config[0] ?? [];
-    $heroImage = publicImagePath($menus[0]['url'] ?? '');
+    $heroImage = publicImagePath($menus[0]['image'] ?? '');
 ?><!DOCTYPE html>
 <html lang="pt-BR">
 <head>

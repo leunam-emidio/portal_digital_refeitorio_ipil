@@ -22,7 +22,7 @@
     $config = $ConfigController->listConfig();
     $feedbacks = $FeedbacksController->listFeedbacks();
     $configItem = $config[0] ?? [];
-    $heroImage = $menus[0]['url'] ?? 'imgs/ipil-icon.png';
+    $heroImage = $menus[0]['image'] ?? $menus[0]['url'] ?? 'imgs/ipil-icon.png';
     if (!$heroImage || str_starts_with($heroImage, 'http://') || str_starts_with($heroImage, 'https://')) {
         $heroImage = 'imgs/ipil-icon.png';
     }

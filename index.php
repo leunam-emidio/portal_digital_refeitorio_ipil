@@ -157,7 +157,7 @@
             <div class="menu-grid">
                 <?php foreach($menus as $menu): ?>
                 <article class="menu-card">
-                    <img src="<?= htmlspecialchars(publicImagePath($menu['url'] ?? '')) ?>" alt="<?= htmlspecialchars($menu['name']) ?>">
+                    <img src="<?= htmlspecialchars(publicImagePath($menu['image'] ?? $menu['url'] ?? '')) ?>" alt="<?= htmlspecialchars($menu['name']) ?>">
                     <div class="menu-card-body">
                         <div class="menu-card-header">
                             <div>

@@ -32,14 +32,33 @@
                 return;
             }
 
-            $image = $this->uploadImage($_FILES['image'] ?? null);
+            $existingMenu = $id ? Menu::findById($this->conn, $id) : null;
+
+            if ($id && !$existingMenu) {
+                http_response_code(404);
+                echo json_encode(['success' => false, 'message' => 'Prato nao encontrado.']);
+                return;
+            }
+
+            if (Menu::nameExists($this->conn, $name, $id ?: null)) {
+                http_response_code(409);
+                echo json_encode(['success' => false, 'message' => 'Ja existe um prato com este nome.']);
+                return;
+            }
+
+            $image = $this->uploadImage($_FILES['image'] ?? null, $name);
+            $uploadedImage = $image !== '';
             if ($image === false) {
                 http_response_code(422);
-                echo json_encode(['success' => false, 'message' => 'Envie uma imagem JPG, PNG, GIF ou WebP com até 3MB.']);
+                echo json_encode(['success' => false, 'message' => 'Envie uma imagem JPG, PNG, GIF ou WebP com até 4MB.']);
                 return;
             }
 
             if ($id) {
+                if ($image === '') {
+                    $image = $this->renameStoredImage($existingMenu['image'] ?? '', $name);
+                }
+
                 $saved = Menu::update($this->conn, $id, $name, $category, $description, $image, $status, $weekdays, $tip);
             } else {
                 if ($image === '') {
@@ -49,6 +68,14 @@
                 }
 
                 $saved = Menu::create($this->conn, $name, $category, $description, $image, $status, $weekdays, $tip);
+            }
+
+            if (!$saved && $uploadedImage) {
+                $this->deleteStoredImage($image);
+            }
+
+            if ($saved && $uploadedImage && $id && ($existingMenu['image'] ?? '') !== $image) {
+                $this->deleteStoredImage($existingMenu['image'] ?? '');
             }
 
             echo json_encode(['success' => (bool) $saved]);
@@ -67,12 +94,12 @@
             echo json_encode(['success' => Menu::delete($this->conn, $id)]);
         }
 
-        private function uploadImage($file) {
+        private function uploadImage($file, $dishName) {
             if (!$file || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
                 return '';
             }
 
-            if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK || ($file['size'] ?? 0) > 3 * 1024 * 1024) {
+            if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK || ($file['size'] ?? 0) > 4 * 1024 * 1024) {
                 return false;
             }
 
@@ -93,7 +120,7 @@
                 mkdir($uploadDir, 0775, true);
             }
 
-            $filename = uniqid('menu_', true) . '.' . $allowed[$mimeType];
+            $filename = $this->slugify($dishName) . '.' . $allowed[$mimeType];
             $destination = $uploadDir . '/' . $filename;
 
             if (!move_uploaded_file($file['tmp_name'], $destination)) {
@@ -101,6 +128,65 @@
             }
 
             return 'imgs/uploads/' . $filename;
+        }
+
+        private function renameStoredImage($image, $dishName) {
+            if (!$image || str_starts_with($image, 'http://') || str_starts_with($image, 'https://')) {
+                return '';
+            }
+
+            $source = realpath(__DIR__ . '/../../' . $image);
+            $uploadDir = realpath(__DIR__ . '/../../imgs/uploads');
+            if (!$source || !$uploadDir || !str_starts_with($source, $uploadDir)) {
+                return '';
+            }
+
+            $extension = pathinfo($source, PATHINFO_EXTENSION);
+            if ($extension === '') {
+                return '';
+            }
+
+            $filename = $this->slugify($dishName) . '.' . strtolower($extension);
+            $destination = $uploadDir . DIRECTORY_SEPARATOR . $filename;
+
+            if ($source === $destination) {
+                return $image;
+            }
+
+            if (!rename($source, $destination)) {
+                return '';
+            }
+
+            return 'imgs/uploads/' . $filename;
+        }
+
+        private function deleteStoredImage($image) {
+            if (!$image || str_starts_with($image, 'http://') || str_starts_with($image, 'https://')) {
+                return;
+            }
+
+            $path = realpath(__DIR__ . '/../../' . $image);
+            $uploadDir = realpath(__DIR__ . '/../../imgs/uploads');
+            if ($path && $uploadDir && str_starts_with($path, $uploadDir) && is_file($path)) {
+                unlink($path);
+            }
+        }
+
+        private function slugify($value) {
+            $slug = trim($value);
+
+            if (function_exists('iconv')) {
+                $converted = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $slug);
+                if ($converted !== false) {
+                    $slug = $converted;
+                }
+            }
+
+            $slug = strtolower($slug);
+            $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
+            $slug = trim($slug, '-');
+
+            return $slug !== '' ? $slug : 'prato';
         }
 
         private function jsonHeader() {

@@ -11,8 +11,7 @@
         }
 
         public function listMenus() {
-            global $conn;
-            return Menu::getAllMenu($conn);
+            return Menu::getAllMenu($this->conn);
         }
 
         public function saveMenu() {

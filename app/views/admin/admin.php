@@ -1,0 +1,452 @@
+<?php
+    require_once __DIR__ . '/../../../config/conn.php';
+    require_once __DIR__ . '/../../controllers/AuthController.php';
+    require_once __DIR__ . '/../../controllers/MenuController.php';
+    require_once __DIR__ . '/../../controllers/FeedbackController.php';
+    require_once __DIR__ . '/../../controllers/ConfigController.php';
+
+    if (!isset($_SESSION['user_id']) || ($_SESSION['role'] ?? '') !== 'admin') {
+        header('Location: ../../../index.php');
+        exit;
+    }
+
+    global $conn;
+
+    $AuthController = new AuthController($conn);
+    $MenuController = new MenuController($conn);
+    $FeedbackController = new FeedbackController($conn);
+    $ConfigController = new ConfigController($conn);
+
+    $users = $AuthController->getAllusers();
+    $menus = $MenuController->listMenus();
+    $feedbacks = $FeedbackController->listFeedbacks();
+    $config = $ConfigController->listConfig();
+    $configItem = $config[0] ?? [];
+?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Administrador | Refeitório IPIL</title>
+    <link rel="stylesheet" href="../../../css/admin-dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="../../../imgs/ipil-icon.png" alt="IPIL Logo">
+                    Portal Admin
+                </div>
+                <div class="sidebar-user">
+                    <div class="sidebar-avatar">AD</div>
+                    <div class="sidebar-user-info">
+                        <h4>Admin</h4>
+                        <p>Administrador</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-item">
+                    <a href="#" class="nav-link active" data-section="overview">
+                        <i class="fa-solid fa-chart-line"></i>
+                        Visão Geral
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="menu">
+                        <i class="fa-solid fa-utensils"></i>
+                        Gerenciar Cardápio
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="users">
+                        <i class="fa-solid fa-users"></i>
+                        Gerenciar Usuários
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="feedbacks">
+                        <i class="fa-solid fa-comment-dots"></i>
+                        Gerenciar Feedbacks
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="reports">
+                        <i class="fa-solid fa-chart-bar"></i>
+                        Relatórios
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="settings">
+                        <i class="fa-solid fa-gear"></i>
+                        Configurações
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Overview Section -->
+            <section id="overview" class="section">
+                <div class="header">
+                    <h1>Dashboard Administrativo</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="location.reload()">
+                            <i class="fa-solid fa-sync-alt"></i>
+                            Atualizar
+                        </button>
+                        <button class="btn btn-logout" onclick="logout()">
+                            <i class="fa-solid fa-sign-out-alt"></i>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon users">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="total-users">0</div>
+                        <div class="stat-label">Usuários Cadastrados</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon dishes">
+                                <i class="fa-solid fa-utensils"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="total-dishes">0</div>
+                        <div class="stat-label">Pratos no Cardápio</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon feedbacks">
+                                <i class="fa-solid fa-comment-dots"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="today-feedbacks">0</div>
+                        <div class="stat-label">Feedbacks Hoje</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon likes">
+                                <i class="fa-solid fa-heart"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="top-dish">-</div>
+                        <div class="stat-label">Prato Mais Curtido</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Menu Management Section -->
+            <section id="menu" class="section" style="display: none;">
+                <div class="header">
+                    <h1>Gerenciamento do Cardápio</h1>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h2 class="table-title">Pratos Cadastrados</h2>
+                        <div class="table-actions">
+                            <select id="dish-filter" class="filter-select">
+                                <option value="">Todas as categorias</option>
+                                <option value="Prato Principal">Prato Principal</option>
+                                <option value="Acompanhamento">Acompanhamento</option>
+                                <option value="Sobremesa">Sobremesa</option>
+                                <option value="Bebida">Bebida</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="addDish()">
+                                <i class="fa-solid fa-plus"></i>
+                                Adicionar Prato
+                            </button>
+                        </div>
+                    </div>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Imagem</th>
+                                <th>Categoria</th>
+                                <th>Descrição</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dishes-tbody">
+                            <!-- Dishes will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- User Management Section -->
+            <section id="users" class="section" style="display: none;">
+                <div class="header">
+                    <h1>Gerenciamento de Usuários</h1>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h2 class="table-title">Usuários Cadastrados</h2>
+                        <div class="table-actions">
+                            <input type="text" id="user-search" class="search-input" placeholder="Buscar por nome ou email...">
+                        </div>
+                    </div>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Data de Cadastro</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody">
+                            <!-- Users will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Feedback Management Section -->
+            <section id="feedbacks" class="section" style="display: none;">
+                <div class="header">
+                    <h1>Gerenciamento de Feedbacks</h1>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h2 class="table-title">Feedbacks Recebidos</h2>
+                        <div class="table-actions">
+                            <select id="feedback-filter" class="filter-select">
+                                <option value="">Todos os feedbacks</option>
+                                <option value="today">Apenas hoje</option>
+                                <!-- Dish options will be populated by JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Prato</th>
+                                <th>Comentário</th>
+                                <th>Data</th>
+                                <th>Curtidas</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="feedbacks-tbody">
+                            <!-- Feedbacks will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="section" style="display: none;">
+                <div class="header">
+                    <h1>Relatórios e Gráficos</h1>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Pratos Mais Curtidos</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="likes-chart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Feedbacks por Dia da Semana</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="feedbacks-chart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Distribuição por Categoria</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="categories-chart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="section" style="display: none;">
+                <div class="header">
+                    <h1>Configurações do Portal</h1>
+                </div>
+
+                <div class="settings-section">
+                    <form id="settings-form">
+                        <div class="settings-group">
+                            <h3 class="settings-title">Informações do Refeitório</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="restaurant-name">Nome do Refeitório</label>
+                                    <input type="text" id="restaurant-name" name="nome_refeitorio" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="description-place">Descrição do refeitório</label>
+                                    <input type="text" id="description-place" name="descricao_refeitorio" class="form-input" value="" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-group">
+                            <h3 class="settings-title">Mensagens e Conteúdo</h3>
+                            <div class="form-group full-width">
+                                <label class="form-label" for="welcome-message">Mensagem de Boas-vindas</label>
+                                <input type="text" id="welcome-message" name="boas_vinda" class="form-input" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label" for="title-initial">Titulo a destacar na pagina inicial</label>
+                                 <input type="text" id="title-initial" name="titulo_index" class="form-input" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label" for="description-initial">Descrição na pagina inicial</label>
+                                <textarea id="description-initial" name="descricao_index" class="form-textarea" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label" for="title-home">Titulo a destacar na home</label>
+                                 <input type="text" id="title-home" name="titulo_home" class="form-input" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label" for="description-home">Descrição na home</label>
+                                <textarea id="description-menu" name="descricao_home" class="form-textarea" rows="3" required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="settings-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa-solid fa-save"></i>
+                                Salvar Alterações
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Dish Modal -->
+    <div id="dish-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="dish-modal-title" class="modal-title">Adicionar Prato</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+
+            <form id="dish-form" onsubmit="saveDish(event)" enctype="multipart/form-data">
+                <input type="hidden" id="dish-id" name="id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="dish-name">Nome do Prato</label>
+                        <input type="text" id="dish-name" name="name" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="dish-category">Categoria</label>
+                        <select id="dish-category" name="category" class="form-select" required>
+                            <option value="">Selecione uma categoria</option>
+                            <option value="Prato Principal">Prato Principal</option>
+                            <option value="Acompanhamento">Acompanhamento</option>
+                            <option value="Sobremesa">Sobremesa</option>
+                            <option value="Bebida">Bebida</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label" for="dish-description">Descrição</label>
+                        <textarea id="dish-description" name="description" class="form-textarea" required></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label class="form-label" for="dish-image">Adicione Imagem</label>
+                        <input type="file" id="dish-image" name="image" class="form-input" accept="image/png,image/jpeg,image/gif,image/webp">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="dish-status">Status</label>
+                        <select id="dish-status" name="status" class="form-select" required>
+                            <option value="active">Ativo</option>
+                            <option value="inactive">Inativo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="dish-weekdays">Dia de Semana do prato</label>
+                        <select id="dish-weekdays" name="weekdays" class="form-select" required>
+                            <option value="">Selecione o dia da semana</option>
+                            <option value="Domingo">Domingo</option>
+                            <option value="Segunda-feira">Segunda-feira</option>
+                            <option value="Terça-feira">Terça-feira</option>
+                            <option value="Quarta-feira">Quarta-feira</option>
+                            <option value="Quinta-feira">Quinta-feira</option>
+                            <option value="Sexta-feira">Sexta-feira</option>
+                            <option value="Sábado">Sábado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="dish-tip">Dica</label>
+                        <input type="text" id="dish-tip" name="tip" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Portal Digital do Refeitório IPIL - Dashboard Administrativo v1.0</p>
+        <p>Desenvolvido por <strong>Emídio Manuel & Toni Kroos</strong> para facilitar seu dia a dia no refeitório.</p>
+    </footer>
+
+    <script>
+        window.adminData = {
+            users: <?= json_encode($users, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>,
+            dishes: <?= json_encode($menus, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>,
+            feedbacks: <?= json_encode($feedbacks, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>,
+            settings: <?= json_encode($configItem, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>
+        };
+    </script>
+    <script src="../../../js/admin-dashboard.js"></script>
+    <script>
+        function logout() {
+            if (confirm('Tem certeza que deseja sair do painel administrativo?')) {
+                window.location.href = '../../../index.php?action=logout';
+            }
+        }
+    </script>
+</body>
+</html>

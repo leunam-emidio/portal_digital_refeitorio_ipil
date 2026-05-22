@@ -217,7 +217,7 @@
         </div>
         <div class="container footer-bottom">
             <p>© 2026 Portal Digital do Refeitório IPIL</p>
-            <p>Desenvolvido para facilitar seu dia a dia no refeitório.</p>
+            <p>Desenvolvido por <strong>Emídio Manuel & Toni Kroos</strong> para facilitar seu dia a dia no refeitório.</p>
         </div>
     </footer>
 

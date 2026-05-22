@@ -30,6 +30,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Administrador | Refeitório IPIL</title>
     <link rel="stylesheet" href="../../../css/admin-dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
     <div class="admin-layout">
@@ -52,37 +53,37 @@
             <nav class="sidebar-nav">
                 <div class="nav-item">
                     <a href="#" class="nav-link active" data-section="overview">
-                        <i>📊</i>
+                        <i class="fa-solid fa-chart-line"></i>
                         Visão Geral
                     </a>
                 </div>
                 <div class="nav-item">
                     <a href="#" class="nav-link" data-section="menu">
-                        <i>🍽️</i>
+                        <i class="fa-solid fa-utensils"></i>
                         Gerenciar Cardápio
                     </a>
                 </div>
                 <div class="nav-item">
                     <a href="#" class="nav-link" data-section="users">
-                        <i>👥</i>
+                        <i class="fa-solid fa-users"></i>
                         Gerenciar Usuários
                     </a>
                 </div>
                 <div class="nav-item">
                     <a href="#" class="nav-link" data-section="feedbacks">
-                        <i>💬</i>
+                        <i class="fa-solid fa-comment-dots"></i>
                         Gerenciar Feedbacks
                     </a>
                 </div>
                 <div class="nav-item">
                     <a href="#" class="nav-link" data-section="reports">
-                        <i>📈</i>
+                        <i class="fa-solid fa-chart-bar"></i>
                         Relatórios
                     </a>
                 </div>
                 <div class="nav-item">
                     <a href="#" class="nav-link" data-section="settings">
-                        <i>⚙️</i>
+                        <i class="fa-solid fa-gear"></i>
                         Configurações
                     </a>
                 </div>
@@ -97,11 +98,11 @@
                     <h1>Dashboard Administrativo</h1>
                     <div class="header-actions">
                         <button class="btn btn-secondary" onclick="location.reload()">
-                            <i>🔄</i>
+                            <i class="fa-solid fa-sync-alt"></i>
                             Atualizar
                         </button>
                         <button class="btn btn-logout" onclick="logout()">
-                            <i>🚪</i>
+                            <i class="fa-solid fa-sign-out-alt"></i>
                             Logout
                         </button>
                     </div>
@@ -110,7 +111,9 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div class="stat-icon users">👥</div>
+                            <div class="stat-icon users">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
                         </div>
                         <div class="stat-value" id="total-users">0</div>
                         <div class="stat-label">Usuários Cadastrados</div>
@@ -118,7 +121,9 @@
 
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div class="stat-icon dishes">🍽️</div>
+                            <div class="stat-icon dishes">
+                                <i class="fa-solid fa-utensils"></i>
+                            </div>
                         </div>
                         <div class="stat-value" id="total-dishes">0</div>
                         <div class="stat-label">Pratos no Cardápio</div>
@@ -126,7 +131,9 @@
 
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div class="stat-icon feedbacks">💬</div>
+                            <div class="stat-icon feedbacks">
+                                <i class="fa-solid fa-comment-dots"></i>
+                            </div>
                         </div>
                         <div class="stat-value" id="today-feedbacks">0</div>
                         <div class="stat-label">Feedbacks Hoje</div>
@@ -134,7 +141,9 @@
 
                     <div class="stat-card">
                         <div class="stat-header">
-                            <div class="stat-icon likes">❤️</div>
+                            <div class="stat-icon likes">
+                                <i class="fa-solid fa-heart"></i>
+                            </div>
                         </div>
                         <div class="stat-value" id="top-dish">-</div>
                         <div class="stat-label">Prato Mais Curtido</div>
@@ -160,7 +169,7 @@
                                 <option value="Bebida">Bebida</option>
                             </select>
                             <button class="btn btn-primary" onclick="addDish()">
-                                <i>➕</i>
+                                <i class="fa-solid fa-plus"></i>
                                 Adicionar Prato
                             </button>
                         </div>
@@ -335,7 +344,7 @@
 
                         <div class="settings-actions">
                             <button type="submit" class="btn btn-primary">
-                                <i>💾</i>
+                                <i class="fa-solid fa-save"></i>
                                 Salvar Alterações
                             </button>
                         </div>
@@ -420,6 +429,7 @@
     <!-- Footer -->
     <footer class="footer">
         <p>&copy; 2026 Portal Digital do Refeitório IPIL - Dashboard Administrativo v1.0</p>
+        <p>Desenvolvido por <strong>Emídio Manuel & Toni Kroos</strong> para facilitar seu dia a dia no refeitório.</p>
     </footer>
 
     <script>

@@ -26,8 +26,8 @@
     $config = $ConfigController->listConfig();
     $feedbacks = $FeedbacksController->listFeedbacks();
     $configItem = $config[0] ?? [];
-    $heroImage = $menus[0]['image'] ?? $menus[0]['url'] ?? 'imgs/ipil-icon.png';
-    if (!$heroImage || str_starts_with($heroImage, 'http://') || str_starts_with($heroImage, 'https://')) {
+    $heroImage = $menus[0]['image'] ?? 'imgs/ipil-icon.png';
+    if (!$heroImage) {
         $heroImage = 'imgs/ipil-icon.png';
     }
     
@@ -39,6 +39,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal do Refeitório | IPIL</title>
     <link rel="stylesheet" href="../../../css/home-logged.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
     <header class="header">
@@ -167,7 +168,7 @@
         </div>
         <div class="container footer-bottom">
             <p>© 2026 Portal Digital do Refeitório IPIL</p>
-            <p>Desenvolvido para facilitar seu dia a dia no refeitório.</p>
+            <p>Desenvolvido por <strong>Emídio Manuel & Toni Kroos</strong> para facilitar seu dia a dia no refeitório.</p>
         </div>
     </footer>
 
@@ -177,7 +178,7 @@
             feedbacks: <?= json_encode($feedbacks, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>
         };
     </script>
-    <script src="../../../js/home-logged.js"></script>
+    <script src="../../../js/home-logged.js" charset="utf8mb4"></script>
     <script>
         function logout() {
             if (confirm('Tem certeza que deseja sair?')) {

@@ -186,11 +186,11 @@ function initMenu() {
                 <div class="menu-card-footer">
                     <div class="menu-actions">
                         <button class="btn-like ${dish.liked ? 'liked' : ''}" data-dish-id="${dish.id}">
-                            <span>👍</span>
+                            <i class="fa-solid fa-thumbs-up"></i>
                             <span class="like-count">${dish.likes}</span>
                         </button>
-                        <button class="btn-feedback" data-dish-id="${dish.id}">💬 Feedback</button>
-                        <button class="btn-view-feedbacks" data-dish-id="${dish.id}">👁️ Ver Feedbacks</button>
+                        <button class="btn-feedback" data-dish-id="${dish.id}"><i class="fa-solid fa-comment-dots"></i> Feedback</button>
+                        <button class="btn-view-feedbacks" data-dish-id="${dish.id}"><i class="fa-solid fa-eye"></i> Ver Feedbacks</button>
                     </div>
                 </div>
             </div>
@@ -281,7 +281,7 @@ function handleViewFeedbacks(e) {
                 <p class="dish-feedback-text">${escapeHTML(feedback.text)}</p>
                 <div class="dish-feedback-actions">
                     <button class="btn-like-comment ${feedback.liked ? 'liked' : ''}" data-feedback-id="${feedback.id}">
-                        <span>👍</span>
+                        <i class="fa-solid fa-thumbs-up"></i>
                         <span class="like-count">${feedback.likes}</span>
                     </button>
                 </div>
@@ -424,7 +424,7 @@ function renderFeedbacks() {
                 <p class="feedback-text">${escapeHTML(feedback.text)}</p>
                 <div class="feedback-actions">
                     <button class="btn-like-comment ${feedback.liked ? 'liked' : ''}" data-feedback-id="${feedback.id}">
-                        <span>👍</span>
+                        <i class="fa-solid fa-thumbs-up"></i>
                         <span class="like-count">${feedback.likes}</span>
                     </button>
                 </div>

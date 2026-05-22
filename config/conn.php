@@ -12,9 +12,10 @@
 
     try{
         $conn = new PDO(
-        "mysql:host=".$_ENV['DB_host'].";dbname=".$_ENV['DB_name'],
+        "mysql:host=".$_ENV['DB_host'].";dbname=".$_ENV['DB_name'].";charset=utf8mb4",
         $_ENV['DB_user'],
         $_ENV['DB_pass']);
+
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }catch(PDOException $e){
         echo "Erro: ".$e->getMessage();

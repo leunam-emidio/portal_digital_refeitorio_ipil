@@ -112,8 +112,12 @@
                 <a href="#menu">Cardápio</a>
                 <a href="#sobre">Sobre</a>
                 <a href="#contato">Contato</a>
+                <div class="nav-actions nav-actions-mobile">
+                    <a href="app/views/auth/login.php" class="btn btn-secondary">Login</a>
+                    <a href="app/views/auth/register.php" class="btn btn-primary">Cadastro</a>
+                </div>
             </nav>
-            <div class="nav-actions">
+            <div class="nav-actions nav-actions-desktop">
                 <a href="app/views/auth/login.php" class="btn btn-secondary">Login</a>
                 <a href="app/views/auth/register.php" class="btn btn-primary">Cadastro</a>
             </div>

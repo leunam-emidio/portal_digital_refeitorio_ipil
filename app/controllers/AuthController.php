@@ -37,7 +37,7 @@ class AuthController {
 
             header("Location: index.php?action=dashboard");
         } else {
-            echo "Login inválido";
+            header("Location: app/views/auth/login.php?Error=login_invalido!!!");
         }
     }
 

@@ -30,6 +30,22 @@
     if (!$heroImage) {
         $heroImage = 'imgs/ipil-icon.png';
     }
+
+    $userName = trim($_SESSION['user_name'] ?? '');
+    $userNameParts = preg_split('/\s+/', $userName, -1, PREG_SPLIT_NO_EMPTY);
+    $getInitial = function ($value) {
+        if (!$value) {
+            return '';
+        }
+
+        return function_exists('mb_substr') ? mb_substr($value, 0, 1, 'UTF-8') : substr($value, 0, 1);
+    };
+    $firstInitial = $getInitial($userNameParts[0] ?? '');
+    $lastInitial = count($userNameParts) > 1 ? $getInitial($userNameParts[count($userNameParts) - 1]) : '';
+    $userInitials = function_exists('mb_strtoupper')
+        ? mb_strtoupper($firstInitial . $lastInitial, 'UTF-8')
+        : strtoupper($firstInitial . $lastInitial);
+    $userInitials = $userInitials ?: 'U';
     
 ?>
 <!DOCTYPE html>
@@ -51,15 +67,13 @@
             <nav class="nav-links" aria-label="Menu principal">
                 <a href="#menu">Cardápio</a>
                 <a href="#sobre">Sobre</a>
+                <button class="btn btn-logout btn-logout-mobile" onclick="logout()">Logout</button>
             </nav>
             <div class="user-info">
                 <div class="user-avatar">
-                    <?= ucwords($_SESSION['user_name'][0]) ?>
+                    <?= htmlspecialchars($userInitials) ?>
                 </div>
-                <span>
-                    <?= ucwords($_SESSION['user_name']) ?>
-                </span>
-                <button class="btn btn-logout" onclick="logout()">Logout</button>
+                <button class="btn btn-logout btn-logout-desktop" onclick="logout()">Logout</button>
             </div>
             <button class="burger" aria-label="Abrir menu">
                 <span></span>
